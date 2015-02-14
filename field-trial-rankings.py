@@ -4,6 +4,9 @@ from bs4 import BeautifulSoup
 from splinter import Browser
 import string
 import re
+import pickle
+import os.path
+import io
 
 root_url = "http://www.fieldtrialdatabase.com/"
 
@@ -44,9 +47,14 @@ def process_dog(browser, dog_url):
         if place == 1:
             num_first_place = num_first_place + 1
 
-    place_dog(dog_url, num_placements, num_first_place / float(num_placements))
+    percent = 0
+    if num_placements > 0:
+        percent = num_first_place / float(num_placements) 
+
+    place_dog(dog_url, num_placements, percent)
 
 dog_rankings = 10
+min_placements = 10
 
 most_placing_dogs = [ ]
 best_placing_dogs = [ ]
@@ -57,12 +65,13 @@ def place_dog(dog_url, num_placements, percent_first):
     while index > 0 and num_placements > most_placing_dogs[index - 1][1]:
         index = index - 1
 
-    if index < 10:
+    if index < dog_rankings:
         most_placing_dogs.insert(index, ( dog_url, num_placements ))
-        if len(most_placing_dogs) > 10:
-            most_placing_dogs.pop(10)
+        if len(most_placing_dogs) > dog_rankings:
+            most_placing_dogs.pop(dog_rankings)
 
-    if num_placements < 3:
+    # don't divide by 0
+    if num_placements == 0 or num_placements < min_placements:
         return # we don't want to let minimally placing dogs compete on this front
 
     index = len(best_placing_dogs)
@@ -70,10 +79,29 @@ def place_dog(dog_url, num_placements, percent_first):
     while index > 0 and percent_first > best_placing_dogs[index - 1][1]:
         index = index - 1
 
-    if index < 10:
+    if index < dog_rankings:
         best_placing_dogs.insert(index, ( dog_url, percent_first ))
-        if len(best_placing_dogs) > 10:
-            best_placing_dogs.pop(10)
+        if len(best_placing_dogs) > dog_rankings:
+            best_placing_dogs.pop(dog_rankings)
+
+def generate_dog_list():
+    dog_list = [ ]
+
+    for search_query in search_queries:
+        list = get_dog_list(browser, search_query)
+
+        if len(list) == 150:
+            print("Warning: a list is too large for full display")
+
+        for dog in list:
+            if not dog_list.count(dog):
+                dog_list.append(dog.a["href"])
+
+    return dog_list
+
+limit_search = False
+
+dog_limit = 40
 
 if __name__ == "__main__":
     with Browser() as browser:
@@ -81,24 +109,26 @@ if __name__ == "__main__":
 
         search_queries = [ ]
 
-        for char1 in string.ascii_lowercase:
-            for char2 in string.ascii_lowercase:
-                search_queries.append("" + char1 + char2)
-
+        if limit_search:
+            search_queries.append("a")
+        else:
+            for char1 in string.ascii_lowercase:
+                for char2 in string.ascii_lowercase:
+                    search_queries.append("" + char1 + char2)
+        
         dog_list = [ ]
 
-        for search_query in search_queries:
-            list = get_dog_list(browser, search_query)
+        if os.path.exists("dog-list.pickle"):
+            dog_list = pickle.load(io.open("dog-list.pickle", "rb"))
+        else:
+            dog_list = generate_dog_list()
+            pickle.dump(dog_list, io.open("dog-list.pickle", "wb"))
 
-            if len(list) == 150:
-                print("Warning: a list is too large for full display")
+        if limit_search:
+            dog_list = dog_list[0:dog_limit]
 
-            for dog in list:
-                if not dog_list.count(dog):
-                    dog_list.append(dog)
-
-        for dog in dog_list[0:25]:
-            process_dog(browser, dog.a["href"])
+        for dog in dog_list:
+            process_dog(browser, dog)
 
         print(most_placing_dogs)
         print(best_placing_dogs)
