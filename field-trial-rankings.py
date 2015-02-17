@@ -33,6 +33,9 @@ def process_dog(browser, dog_url):
     page = BeautifulSoup(browser.html)
 
     placements_text = page.findAll('b', text = re.compile("[0-9]+ PLACEMENTS"))
+    if len(placements_text) == 0: # avoid a weird error?
+        return
+
     num_placements_str = placements_text[0].text.strip()
 
     num_placements = int(num_placements_str[0:num_placements_str.find(" ")])
@@ -58,8 +61,15 @@ min_placements = 10
 
 most_placing_dogs = [ ]
 best_placing_dogs = [ ]
+all_dogs = [ ]
+
+dog_stats_saved = False
 
 def place_dog(dog_url, num_placements, percent_first):
+    if not dog_stats_saved:
+        all_dogs.append(( dog_url, num_placements, percent_first ))
+    
+    # rank by number of placements
     index = len(most_placing_dogs)
 
     while index > 0 and num_placements > most_placing_dogs[index - 1][1]:
@@ -70,8 +80,7 @@ def place_dog(dog_url, num_placements, percent_first):
         if len(most_placing_dogs) > dog_rankings:
             most_placing_dogs.pop(dog_rankings)
 
-    # don't divide by 0
-    if num_placements == 0 or num_placements < min_placements:
+    if num_placements < min_placements:
         return # we don't want to let minimally placing dogs compete on this front
 
     index = len(best_placing_dogs)
@@ -84,51 +93,62 @@ def place_dog(dog_url, num_placements, percent_first):
         if len(best_placing_dogs) > dog_rankings:
             best_placing_dogs.pop(dog_rankings)
 
-def generate_dog_list():
-    dog_list = [ ]
+def generate_dog_list(search_queries):
+    dog_set = set([]) # use a set to avoid duplicates
 
     for search_query in search_queries:
-        list = get_dog_list(browser, search_query)
+        new_dog_list = get_dog_list(browser, search_query)
 
-        if len(list) == 150:
+        if len(new_dog_list) == 150:
             print("Warning: a list is too large for full display")
 
-        for dog in list:
-            if not dog_list.count(dog):
-                dog_list.append(dog.a["href"])
+        for dog in new_dog_list:
+            dog_set.add(dog.a["href"])
 
-    return dog_list
+    return list(dog_set)
 
 limit_search = False
+start_over = False
 
 dog_limit = 40
 
 if __name__ == "__main__":
-    with Browser() as browser:
-        browser.visit(root_url + "dogSearch.php4")
+    if os.path.exists("dog-stats.pickle") and not start_over:
+        dog_stats_saved = True
 
-        search_queries = [ ]
+        all_dogs = pickle.load(io.open("dog-stats.pickle", "rb"))
 
-        if limit_search:
-            search_queries.append("a")
-        else:
-            for char1 in string.ascii_lowercase:
-                for char2 in string.ascii_lowercase:
-                    search_queries.append("" + char1 + char2)
-        
-        dog_list = [ ]
+        for dog in all_dogs:
+            place_dog(dog[0], dog[1], dog[2])
+    else:
+        with Browser() as browser:
+            browser.visit(root_url + "dogSearch.php4")
 
-        if os.path.exists("dog-list.pickle"):
-            dog_list = pickle.load(io.open("dog-list.pickle", "rb"))
-        else:
-            dog_list = generate_dog_list()
-            pickle.dump(dog_list, io.open("dog-list.pickle", "wb"))
+            search_queries = [ ]
 
-        if limit_search:
-            dog_list = dog_list[0:dog_limit]
+            if limit_search:
+                search_queries.append("a")
+                search_queries.append("b")
+            else:
+                for char1 in string.ascii_lowercase:
+                    for char2 in string.ascii_lowercase:
+                        search_queries.append("" + char1 + char2)
+            
+            dog_list = [ ]
 
-        for dog in dog_list:
-            process_dog(browser, dog)
+            if os.path.exists("dog-list.pickle") and not start_over:
+                dog_list = pickle.load(io.open("dog-list.pickle", "rb"))
+            else:
+                dog_list = generate_dog_list(search_queries)
+                pickle.dump(dog_list, io.open("dog-list.pickle", "wb"))
 
-        print(most_placing_dogs)
-        print(best_placing_dogs)
+            if limit_search:
+                dog_list = dog_list[0:dog_limit]
+
+            for dog in dog_list:
+                process_dog(browser, dog)
+
+            pickle.dump(all_dogs, io.open("dog-stats.pickle", "wb"))
+
+    print(most_placing_dogs)
+    print(best_placing_dogs)
