@@ -36,7 +36,7 @@ class Dog(object):
         rows = placements_table.tbody.contents[1:]
 
         # for each stake type we're interested in, tally the number of
-        # placements for each differentplace number
+        # placements for each different place number
         for stake_type in stake_types:
             for row in rows:
                 stake = row.contents[2].text.strip()
