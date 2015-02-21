@@ -1,6 +1,10 @@
 from bs4 import BeautifulSoup
 from splinter import Browser
 import string
+import pickle
+import io
+
+from dog import Dog
 
 root_url = "http://www.fieldtrialdatabase.com/"
 search_url = "dogSearch.php4"
@@ -8,7 +12,7 @@ search_url = "dogSearch.php4"
 max_dogs_displayed = 150
 
 limit_search = False
-dog_limit = 40
+dog_limit = 20
 
 
 def get_dog_list(browser, search_query):
@@ -27,7 +31,7 @@ def get_dog_list(browser, search_query):
     else:
         return [ ]
 
-def generate_dog_list(search_queries):
+def generate_dog_list(browser, search_queries):
     dog_set = set([]) # use a set to avoid duplicates
 
     for search_query in search_queries:
@@ -43,7 +47,7 @@ def generate_dog_list(search_queries):
 
 def extract_dog_stats():
     with Browser() as browser:
-        browser.visit(root_url + "")
+        browser.visit(root_url + search_url)
 
         search_queries = [ ]
 
@@ -57,7 +61,7 @@ def extract_dog_stats():
                 for char2 in string.ascii_lowercase:
                     search_queries.append(str(char1) + str(char2))
         
-        dog_list = generate_dog_list(search_queries)
+        dog_list = generate_dog_list(browser, search_queries)
 
         if limit_search:
             dog_list = dog_list[0:dog_limit]
@@ -65,8 +69,8 @@ def extract_dog_stats():
         dog_stats = [ ]
 
         for dog_url in dog_list:
-            browser.visit(dog_url)
-            dog = Dog.from_html(browser.html)
+            browser.visit(root_url + dog_url)
+            dog = Dog.from_html(browser.html, dog_url)
             dog_stats.append(dog)
 
         pickle.dump(dog_stats, io.open("dog-stats.pickle", "wb"))

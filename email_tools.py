@@ -1,11 +1,11 @@
 import smtplib
 from email.mime.text import MIMEText
 
-def send_most_placements_email(most_placing_dogs):
+def send_rankings(rankings, rank_method, stake_type):
     from_address = "nleroybot@gmail.com"
-    to_address = "nelson.nleroy@gmail.com"
+    to_address = "daniel.campbell@slcschools.org"
 
-    subject = "Most Placing Dogs"
+    subject = rank_method.name + " (" + stake_type + ")"
     body_html = """
         <html>
             <head></head>
@@ -14,9 +14,9 @@ def send_most_placements_email(most_placing_dogs):
         """
 
     num = 1
-    for dog in most_placing_dogs:
-        body_html += str(num) + ". <a href=\"http://www.fieldtrialdatabase.com/" + dog[0] \
-                + "\">name placeholder</a><br>"
+    for dog in rankings:
+        body_html += str(num) + ". <a href=\"http://www.fieldtrialdatabase.com/" + dog.url \
+                + "\">" + rank_method.format(dog, stake_type) + "</a><br>"
 
         num += 1
 

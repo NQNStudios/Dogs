@@ -7,12 +7,17 @@ stake_types = [ 'AA', 'GD' ]
 class Dog(object):
     """ Contains useful information about a dog """
 
-    def __init__(self):
+    def __init__(self, url):
+        self.__url = url
         self.__name = ""
         self.__placements = { }
 
         for stake_type in stake_types:
             self.__placements[stake_type] = Placements()
+
+    @property
+    def url(self):
+        return self.__url
 
     @property
     def name(self):
@@ -23,8 +28,8 @@ class Dog(object):
         return self.__placements
 
     @staticmethod
-    def from_html(html):
-        dog = Dog()
+    def from_html(html, url):
+        dog = Dog(url)
 
         page = BeautifulSoup(html)
 
