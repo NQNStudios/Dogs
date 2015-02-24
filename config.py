@@ -6,4 +6,6 @@ to_addresses = [
         "nleroybot@gmail.com"
         ]
 
-use_save = False
+use_save = True
+
+last_place = 4

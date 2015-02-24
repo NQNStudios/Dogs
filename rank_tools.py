@@ -1,5 +1,7 @@
 from dog import Dog
 
+import config
+
 dog_rankings = 25
 
 class RankingMethod(object):
@@ -72,21 +74,24 @@ rank_methods.append(best_record)
 def best_average_qualifier(dog, stake_type):
     return dog.placements[stake_type].total_placements > min_placements
 
-def average_placement(dog):
+def average_placement(dog, stake_type):
     sum = 0
 
-    for place, count in dog.placements[stake_type].place_counts:
+    for place in range(1, config.last_place + 1):
+        count = dog.placements[stake_type].num_placements(place)
         sum += place * count
 
-    return sum / float(dog.placements[stake_type].total_count)
+    return sum / float(dog.placements[stake_type].total_placements)
 
 def best_average_compare(dogA, dogB, stake_type):
-    return average_placement(dogA) < average_placement(dogB)
+    return average_placement(dogA, stake_type) < average_placement(dogB, stake_type)
 
 def best_average_format(dog, stake_type):
     return dog.name + " (" \
-            + "{0:.2f}".format(average_placement(dog)) \
+            + "{0:.2f}".format(average_placement(dog, stake_type)) \
             + " average)"
 
 best_average = RankingMethod("Best Placement Average Dog Rankings",
         best_average_qualifier, best_average_compare, best_average_format)
+
+rank_methods.append(best_average)
