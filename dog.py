@@ -2,7 +2,7 @@ from bs4 import BeautifulSoup
 
 from placements import Placements
 
-stake_types = [ 'AA', 'GD' ]
+stake_types = [ 'AA', 'OAA', 'AAA', 'GD', 'OGD', 'AGD' ]
 
 class Dog(object):
     """ Contains useful information about a dog """

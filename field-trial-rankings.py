@@ -7,12 +7,13 @@ import pickle
 import dog
 from dog import Dog
 
+import config
 import site_tools
 import email_tools
 import rank_tools
 
 if __name__ == "__main__":
-    if os.path.isfile("dog-stats.pickle"):
+    if os.path.isfile("dog-stats.pickle") and config.use_save:
         dog_stats = pickle.load(io.open("dog-stats.pickle", "rb"))
     else:
         dog_stats = site_tools.extract_dog_stats()

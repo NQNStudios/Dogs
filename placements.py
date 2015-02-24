@@ -9,6 +9,10 @@ class Placements(object):
     def total_placements(self):
         return self.__total_count
 
+    @property
+    def place_counts(self):
+        return self.__place_counts
+    
     def num_placements(self, place):
         if place in self.__place_counts:
             return self.__place_counts[place]
