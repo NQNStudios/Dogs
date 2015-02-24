@@ -3,9 +3,9 @@ bot_password = "B0taccount"
 
 to_addresses = [
         "nelson.nleroy@gmail.com",
-        "nleroybot@gmail.com"
+        "daniel.campbell@slcschools.org"
         ]
 
-use_save = True
+use_save = False
 
 last_place = 4
