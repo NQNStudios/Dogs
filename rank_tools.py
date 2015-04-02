@@ -53,8 +53,8 @@ most_placements = RankingMethod("Most Placements Dog Rankings",
 
 rank_methods.append(most_placements)
 
-min_placements = 25
 def best_record_qualifier(dog, stake_type):
+    min_placements = config.stake_qualifiers[stake_type]
     return dog.placements[stake_type].total_placements > min_placements
 
 def best_record_compare(dogA, dogB, stake_type):
@@ -72,6 +72,7 @@ best_record = RankingMethod("Best Placement Record Dog Rankings",
 rank_methods.append(best_record)
 
 def best_average_qualifier(dog, stake_type):
+    min_placements = config.stake_qualifiers[stake_type]
     return dog.placements[stake_type].total_placements > min_placements
 
 def average_placement(dog, stake_type):
