@@ -9,3 +9,5 @@ to_addresses = [
 use_save = False
 
 last_place = 4
+
+stake_types = [ 'AA', 'OAA', 'AAA', 'GD', 'OGD', 'AGD' ]
