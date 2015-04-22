@@ -2,6 +2,7 @@
 
 import smtplib
 from email.mime.text import MIMEText
+import config
 
 if __name__ == "__main__":
     from_address = "nleroybot@gmail.com"
@@ -20,7 +21,7 @@ if __name__ == "__main__":
     </html>
     """
     gmail_user = "nleroybot@gmail.com"
-    gmail_password = "B0taccount"
+    gmail_password = config.bot_password
 
     message = MIMEText(body, "html")
     message['From'] = from_address

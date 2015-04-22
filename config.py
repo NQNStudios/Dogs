@@ -1,5 +1,7 @@
 bot_address = "nleroybot@gmail.com"
-bot_password = "B0taccount"
+
+emailrc = open('.emailrc')
+bot_password = emailrc.readline()
 
 to_addresses = [
         "nelson.nleroy@gmail.com",

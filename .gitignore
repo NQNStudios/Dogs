@@ -1,6 +1,9 @@
 # Vim
 *.swp
 
+# password
+.emailrc
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
