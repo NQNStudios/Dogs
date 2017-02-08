@@ -3,6 +3,8 @@ from splinter import Browser
 import string
 import pickle
 import io
+import os
+import config
 
 from dog import Dog
 
@@ -11,7 +13,6 @@ search_url = "dogSearch.php4"
 
 max_dogs_displayed = 150
 
-limit_search = False
 dog_limit = 20
 
 
@@ -51,7 +52,7 @@ def extract_dog_stats():
 
         search_queries = [ ]
 
-        if limit_search:
+        if config.limit_search:
             # search 2 common letters to probe for duplicates
             search_queries.append("a")
             search_queries.append("b")
@@ -60,10 +61,16 @@ def extract_dog_stats():
             for char1 in string.ascii_lowercase:
                 for char2 in string.ascii_lowercase:
                     search_queries.append(str(char1) + str(char2))
-        
-        dog_list = generate_dog_list(browser, search_queries)
 
-        if limit_search:
+        # Don't scrape all those searches for the dog list if we have one
+        # we can use already
+        if os.path.isfile("dog-list.pickle") and config.use_save:
+            dog_list = pickle.load(io.open("dog-list.pickle", "rb"))
+        else:
+            dog_list = generate_dog_list(browser, search_queries)
+            pickle.dump(dog_list, io.open("dog-list.pickle", "wb"))
+
+        if config.limit_search:
             dog_list = dog_list[0:dog_limit]
 
         dog_stats = [ ]

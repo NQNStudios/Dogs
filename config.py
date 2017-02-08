@@ -8,7 +8,7 @@ to_addresses = [
         "daniel.campbell@slcschools.org"
         ]
 
-use_save = False
+use_save = True
 
 last_place = 4
 
@@ -21,3 +21,5 @@ stake_qualifiers = {
     'OGD': 20,
     'AGD': 15
 }
+
+limit_search = True

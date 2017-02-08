@@ -1,11 +1,10 @@
-#! /usr/bin/env python3
+#! /usr/bin/env python
 
 import os
 import io
 import pickle
 
 import dog
-from dog import Dog
 
 import config
 import site_tools
