@@ -5,6 +5,7 @@ import pickle
 import io
 import os
 import config
+import time
 
 from dog import Dog
 
@@ -22,7 +23,8 @@ def get_dog_list(browser, search_query):
     browser.fill("dogSearchText", search_query)
     browser.find_option_by_text("Brittany").click()
     browser.find_by_value("search").click()
-    page = BeautifulSoup(browser.html)
+    time.sleep(1)
+    page = BeautifulSoup(browser.html, 'html.parser')
 
     table = page.find_all(
             attrs={ "valign": "top"})[1]
@@ -36,6 +38,7 @@ def generate_dog_list(browser, search_queries):
     dog_set = set([]) # use a set to avoid duplicates
 
     for search_query in search_queries:
+        time.sleep(1)
         new_dog_list = get_dog_list(browser, search_query)
 
         if len(new_dog_list) == max_dogs_displayed:
@@ -47,7 +50,7 @@ def generate_dog_list(browser, search_queries):
     return list(dog_set)
 
 def extract_dog_stats():
-    with Browser() as browser:
+    with Browser('firefox') as browser:
         browser.visit(root_url + search_url)
 
         search_queries = [ ]
@@ -64,7 +67,7 @@ def extract_dog_stats():
 
         # Don't scrape all those searches for the dog list if we have one
         # we can use already
-        if os.path.isfile("dog-list.pickle") and config.use_save:
+        if os.path.isfile("dog-list.pickle") and config.use_saved_list:
             dog_list = pickle.load(io.open("dog-list.pickle", "rb"))
         else:
             dog_list = generate_dog_list(browser, search_queries)

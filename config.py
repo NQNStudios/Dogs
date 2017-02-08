@@ -1,14 +1,13 @@
 bot_address = "nleroybot@gmail.com"
 
-emailrc = open('.emailrc')
-bot_password = emailrc.readline()
+dogrc = open('.dogrc')
+bot_password = dogrc.readline()
+
 
 to_addresses = [
         "nelson.nleroy@gmail.com",
         "daniel.campbell@slcschools.org"
         ]
-
-use_save = True
 
 last_place = 4
 
@@ -22,4 +21,7 @@ stake_qualifiers = {
     'AGD': 15
 }
 
-limit_search = True
+use_saved_list = False
+use_saved_stats = False
+limit_search = False
+send_results = False
