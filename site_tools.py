@@ -22,7 +22,7 @@ max_dogs_displayed = 150
 
 dog_limit = 20
 
-scraping_threads = 2
+scraping_threads = 4
 
 def pause():
     time.sleep(0.1)
@@ -168,19 +168,22 @@ def list_search_queries():
 
     search_queries = []
 
+    # TODO The first two always return no results for some reason
+
     if config.limit_search():
         # search 2 common letters to probe for duplicates
+        print("LIMITING THE SEARCH FOR TESTING")
+        search_queries.append("a")
+        search_queries.append("b")
         search_queries.append("a")
         search_queries.append("b")
     else:
        # search every combo of 2 letters to scrape all dogs
-            for char1 in string.ascii_lowercase:
-                search_queries.append(str(char1))
-                # for char2 in string.ascii_lowercase:
-                    # search_queries.append(str(char1) + str(char2))
+        for char1 in string.ascii_lowercase:
+            for char2 in string.ascii_lowercase:
+                search_queries.append(str(char1) + str(char2))
 
     return search_queries
-
 
 
 class DogScraperThread(Thread):
@@ -188,6 +191,11 @@ class DogScraperThread(Thread):
         Thread.__init__(self)
 
         self._dog_list_subset = dog_list_subset
+        self._dogs_scraped_count = 0
+        self._dogs_to_scrape = len(dog_list_subset)
+
+    def __del__(self):
+        self._browser.quit()
 
     def run(self):
         self._browser = Browser()
@@ -197,6 +205,9 @@ class DogScraperThread(Thread):
             self._browser.visit(root_url + dog_url)
             dog = Dog.from_html(self._browser.html, dog_url)
             self.output_dogs.append(dog)
+            self._dogs_scraped_count += 1
+
+            print('% of dogs scraped in a thread: ' + str(float(self._dogs_scraped_count / self._dogs_to_scrape) * 100))
 
 def extract_dog_stats(dog_list):
     if config.limit_search():
