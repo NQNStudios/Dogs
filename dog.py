@@ -31,15 +31,19 @@ class Dog(object):
 
     @staticmethod
     def from_html(html, url):
+        print (url)
+        print (html)
         dog = Dog(url)
 
-        page = BeautifulSoup(html)
+        page = BeautifulSoup(html, 'html.parser')
 
         # name the dog
         dog.__name = page.title.text.strip()
-        
+        print (dog.__name)
+
         # search the placements table for placement stats
-        placements_table = page.findAll('table', border="1", cellpadding="2")[0]
+        print (page.body.prettify())
+        placements_table = page.body.find_all('table', border="1", cellpadding="2")[0]
         rows = placements_table.tbody.contents[1:]
 
         # for each stake type we're interested in, tally the number of
