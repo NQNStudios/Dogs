@@ -23,8 +23,12 @@ def get_dog_list(browser, search_query):
     browser.fill("dogSearchText", search_query)
     browser.find_option_by_text("Brittany").click()
     browser.find_by_value("search").click()
-    time.sleep(1)
-    page = BeautifulSoup(browser.html, 'html.parser')
+    time.sleep(0.1)
+    try:
+        page = BeautifulSoup(browser.html, 'html.parser')
+    except:
+        print('WARNING: Recursing because of an exception')
+        return get_dog_list(browser, search_query)
 
     table = page.find_all(
             attrs={ "valign": "top"})[1]

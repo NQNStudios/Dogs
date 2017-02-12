@@ -21,7 +21,7 @@ stake_qualifiers = {
     'AGD': 15
 }
 
-use_saved_list = False
-use_saved_stats = False
+use_saved_list = True
+use_saved_stats = True
 limit_search = False
-send_results = False
+send_results = True
