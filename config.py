@@ -1,3 +1,5 @@
+import sys
+
 bot_address = "nleroybot@gmail.com"
 
 dogrc = open('.dogrc')
@@ -21,7 +23,14 @@ stake_qualifiers = {
     'AGD': 15
 }
 
-use_saved_list = True
-use_saved_stats = True
-limit_search = False
-send_results = True
+def use_saved_list():
+    return sys.argv.count("--use-saved-list") != 0
+
+def use_saved_stats():
+    return sys.argv.count("--use-saved-stats") != 0
+
+def limit_search():
+    return sys.argv.count("--limit-search") != 0
+
+def send_results():
+    return sys.argv.count("--send-results") != 0
