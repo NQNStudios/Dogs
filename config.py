@@ -8,7 +8,7 @@ bot_password = dogrc.readline()
 
 to_addresses = [
         "nelson.nleroy@gmail.com",
-        "daniel.campbell@slcschools.org"
+        "danwcampbell@gmail.com"
         ]
 
 last_place = 4
