@@ -43,7 +43,7 @@ if __name__ == "__main__":
         yaml.dump(dog_list, io.open("dog-list.yaml", "w"))
 
     # Compare the new list with the old one
-    compare_list_with_old(dog_list, "previous_stats/dog-list.pickle")
+    # compare_list_with_old(dog_list, "previous_stats/dog-list.pickle")
 
     # don't bother extracting all the dog stats if we have a save
     if os.path.isfile("dog-stats.yaml") and config.use_saved_stats():
